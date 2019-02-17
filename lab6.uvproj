@@ -420,6 +420,46 @@
               <FileType>1</FileType>
               <FilePath>..\STM32F\src\system_stm32f30x.c</FilePath>
             </File>
+            <File>
+              <FileName>cli.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\cli.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f3_Button.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\stm32f3_Button.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f3_Exec.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\stm32f3_Exec.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f3_GeneralTimer2.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\stm32f3_GeneralTimer2.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f3_LEDS.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\stm32f3_LEDS.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f3_Tools.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\stm32f3_Tools.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f3_UART.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\stm32f3_UART.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f3_Flash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\stm32f3_Flash.c</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>

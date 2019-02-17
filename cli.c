@@ -23,6 +23,7 @@ INCLUDES
 #include "stm32f30x.h"
 #include "stm32f3_EXEC.h"
 #include "cli.h"
+#include "stm32f3_Flash.h"
 
 /*******************************************************************************
 
@@ -48,6 +49,7 @@ static CLI_CMD_Type cmd_cli_list[CLI_MAX_COMMANDS];     /*!< list of command fun
 static void     cli_help(const uint8_t * cli_string);
 static void     cli_set_memory(const uint8_t * cli_string);
 static void     cli_get_memory(const uint8_t * cli_string);
+static void     cli_erase_flash(const uint8_t * cli_string);
 static uint8_t  cli_list_init(uint8_t index, const uint8_t * string, uint8_t size, const uint8_t * help, CLICMDFuncPtr fptr);
 
 static uint8_t  is_dec_num(uint8_t src);
@@ -318,13 +320,63 @@ void cli_set_memory(const uint8_t * cli_string){
 	uint32_t ptr=0;
 	uint32_t data=0;
 	uint32_t * p;
+    uint32_t tmpPtr=0;
+    uint32_t tmpData=0;
 	
 	str_2_long(&cli_string[9], &ptr);
 	
 	str_2_long(&cli_string[17], &data);
 	
-	p = (uint32_t *) ptr;
-	*p= data;
+    //check if address is in the FLASH range
+    if ((FLASH_BASE < ptr) && (ptr < (FLASH_BASE+0x00400000))){
+      //write the first 16 bits
+      if (FlashWrite16(ptr, (uint16_t)data) == 1) {
+        //increment pointer
+        tmpPtr = ptr + 2;
+        //shift the data
+        tmpData = data >> 16;
+        //write the other 16 bits
+        if (FlashWrite16(tmpPtr, (uint16_t)tmpData) == 1){
+          printf("\r\nFLASH Write SUCCESSFUL");
+        } else {
+          printf("\r\nFLASH Write FAILED");
+        }
+      } else {
+        printf("\r\nFLASH Write FAILED");
+      }
+    } else {
+	  p = (uint32_t *) ptr;
+      *p= data;
+    }
+
+	return;
+}
+
+/*******************************************************************************
+This function parses the input string for a 32 bit pointer and then erases the
+page in FLASH that contains the address
+
+\param[in] cli_string the string to parse for command information
+
+\retval None
+
+\warning There is NO checking on the pointer field.  
+
+******************************************************************************/
+void cli_erase_flash(const uint8_t * cli_string){
+	uint32_t ptr=0;
+	
+	str_2_long(&cli_string[10], &ptr);
+	
+    //check if address is in the FLASH range
+    if ((FLASH_BASE < ptr) && (ptr < (FLASH_BASE+0x00400000))){
+      //erase flash page
+      if (FlashErasePage(ptr) == 1){
+        printf("\r\nFLASH Erase SUCCESSFUL");
+      } else {
+        printf("\r\nFLASH Erase FAILED");
+      }
+    }
 
 	return;
 }
@@ -537,6 +589,7 @@ void CLI_Init(void){
 	cli_list_init(0,  "help",           4, "Prints out a list of all commands", &cli_help);
 	cli_list_init(1,  "getmemory",      9, "Gets data from address: get memory <address>", &cli_get_memory);
 	cli_list_init(2,  "setmemory",      9, "Sets data to address: set memory <address> <data>", &cli_set_memory);
+	cli_list_init(3,  "eraseflash",     10, "Erases FLASH page : erase flash <page>", &cli_erase_flash);
 	cli_list_init(CLI_MAX_COMMANDS-1, ASCII_NULL,  0, ASCII_NULL, NULL);  //ALWAYS THE LAST ONE!
 
 	//
